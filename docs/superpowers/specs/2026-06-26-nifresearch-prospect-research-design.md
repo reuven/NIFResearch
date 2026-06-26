@@ -142,14 +142,26 @@ goal.
 
 ## 8. Live slice (what we actually wire up)
 
-- **GuideStar Israel / Registrar of Non-profits (רשם העמותות)** — board members &
-  officers of non-profits. Public.
-- **Companies Registrar (רשם החברות)** — directorships. Public (some data behind a
-  paid API; we use the public tier).
+**Revised by the source-catalog research (see `../research/source-catalog.md` §8).**
+The original guess (GuideStar + Companies Registrar) was dropped for the first
+slice because GuideStar has no API and requires headless-browser scraping. The
+chosen slice favours **clean, free, official, API/dataset-backed** sources:
+
+- **`data.gov.il` CKAN — Amutot (`moj-amutot`) and Companies (`ica_companies`)** —
+  free no-auth JSON API, name/number searchable, rich org financials + ניהול תקין
+  status. Entity-level only (no board members), which the report makes explicit.
+- **A professional licensing registry** — e.g. **lawyers** (CC-BY `odata.org.il`
+  dataset) and/or **doctors** (`data.gov.il`). The one thing that genuinely works
+  from a bare **name**, returning profession + seniority. official_public, free.
 - **1–2 mock/sample plugins** — to demonstrate the pattern and to develop against
   without hitting live services or real people. Demos should target **public
   figures** (e.g. known philanthropists on non-profit boards) to avoid privacy
   concerns during development.
+
+**Deferred to phase 2** (higher value, but scraping/paid/cross-border — out of the
+first slice): GuideStar board members (headless browser), Companies extract officers
+(~₪11/extract), an address → affluence sub-pipeline (CBS socioeconomic index +
+nadlan valuation), MAYA exec-pay, ProPublica 990-PF, and the insolvency registry.
 
 ## 9. Tech stack
 
