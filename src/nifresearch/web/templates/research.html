@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>דוח — NIFResearch</title>
+  <style>
+    body { font-family: sans-serif; max-width: 760px; margin: 2rem auto; }
+    .warn { background:#fff3cd; padding:.5rem .75rem; border:1px solid #ffe69c; margin:.25rem 0; }
+    .fact { padding:.35rem 0; border-bottom:1px solid #eee; }
+    .src { color:#666; font-size:.8rem; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    td, th { border:1px solid #ddd; padding:.35rem; text-align:right; font-size:.9rem; }
+    .skipped { color:#999; } .error { color:#b00; } .ok { color:#070; }
+    #barwrap { background:#eee; border-radius:4px; height:14px; margin:1rem 0; overflow:hidden; }
+    #bar { background:#070; height:100%; width:0; transition:width .3s; }
+    #sources { list-style:none; padding:0; }
+    #sources li { padding:.3rem 0; border-bottom:1px solid #f0f0f0; }
+    #sources li .st { display:inline-block; width:2.5rem; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <h1>מחקר תורמים — מתבצע…</h1>
+  {% for w in warnings %}<div class="warn">{{ w }}</div>{% endfor %}
+  <noscript>הצגת התקדמות חיה דורשת JavaScript.</noscript>
+  <div id="barwrap"><div id="bar"></div></div>
+  <ul id="sources">
+    {% for row in rows %}
+      <li data-id="{{ row.id }}"><span class="st">⋯</span>{{ row.name }}</li>
+    {% endfor %}
+  </ul>
+  <div id="report"></div>
+  <p><a href="/">חיפוש חדש</a></p>
+  <script>
+    const total = {{ rows|length }} || 1;
+    let done = 0;
+    const es = new EventSource({{ stream_url|tojson }});
+    es.addEventListener('progress', (e) => {
+      const d = JSON.parse(e.data);
+      const li = document.querySelector('#sources li[data-id="' + d.source_id + '"]');
+      if (li) {
+        li.className = d.status;
+        const mark = d.status === 'ok' ? ('✓ ' + d.fact_count)
+                   : d.status === 'error' ? '✗'
+                   : d.status === 'no_match' ? '–' : '⤳';
+        li.querySelector('.st').textContent = mark;
+      }
+      done += 1;
+      document.getElementById('bar').style.width = Math.round(100 * done / total) + '%';
+    });
+    es.addEventListener('done', (e) => {
+      const d = JSON.parse(e.data);
+      document.getElementById('report').innerHTML = d.html;
+      document.getElementById('bar').style.width = '100%';
+      es.close();
+    });
+    es.onerror = () => es.close();
+  </script>
+</body>
+</html>
