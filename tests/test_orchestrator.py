@@ -6,7 +6,7 @@ from nifresearch.models import (
     Classification, ComplianceMode, InputField, Subject, SourceResult, SourceStatus,
 )
 from nifresearch.sources.base import Source
-from nifresearch.orchestrator import run
+from nifresearch.orchestrator import run, run_streaming
 
 
 class OkSource(Source):
@@ -107,3 +107,15 @@ async def test_eligible_sources_run_concurrently():
     assert elapsed < 1.5 * D, (
         f"Sources appear to have run sequentially: elapsed={elapsed:.3f}s >= 1.5*D={1.5*D:.3f}s"
     )
+
+
+@pytest.mark.asyncio
+async def test_run_streaming_yields_one_result_per_source_including_skipped():
+    subject = Subject(name_he="דוד")
+    sources = [OkSource(), LicensedSource(), BoomSource()]
+    results = [r async for r in run_streaming(subject, sources, ComplianceMode.STRICT)]
+    by_id = {r.source_id: r for r in results}
+    assert set(by_id) == {"ok", "lic", "boom"}
+    assert by_id["ok"].status == SourceStatus.OK
+    assert by_id["lic"].status == SourceStatus.SKIPPED      # licensed blocked under STRICT
+    assert by_id["boom"].status == SourceStatus.ERROR       # raises
