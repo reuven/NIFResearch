@@ -32,7 +32,7 @@ class CompaniesSource(Source):
                 value=rec.get("שם חברה", "").strip(),
                 source_id=self.id,
                 confidence=0.3,
-                url="https://data.gov.il/dataset/ica_companies",
+                url="https://data.gov.il/api/3/action/package_show?id=ica_companies",
                 detail={
                     "company_number": str(rec.get("מספר חברה", "")),
                     "status": rec.get("סטטוס חברה", ""),

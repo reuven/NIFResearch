@@ -34,7 +34,7 @@ class AmutotSource(Source):
                 value=rec.get("שם עמותה", "").strip(),
                 source_id=self.id,
                 confidence=0.3,
-                url="https://data.gov.il/dataset/moj-amutot",
+                url="https://data.gov.il/api/3/action/package_show?id=moj-amutot",
                 detail={
                     "amuta_number": str(rec.get("מספר עמותה", "")),
                     "status": rec.get("סטטוס עמותה", ""),

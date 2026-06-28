@@ -30,7 +30,7 @@ async def test_query_maps_records_to_facts():
     assert result.facts[0].source_id == "datagov_amutot"
     assert result.facts[0].confidence == 0.3
     assert result.facts[0].detail["status"] == "רשומה"
-    assert result.facts[0].url == "https://data.gov.il/dataset/moj-amutot"
+    assert result.facts[0].url == "https://data.gov.il/api/3/action/package_show?id=moj-amutot"
 
 
 @pytest.mark.asyncio

@@ -10,7 +10,7 @@ from nifresearch.sources.ckan import CkanClient
 
 BASE_URL = "https://data.gov.il"
 RESOURCE_ID = "9c64c522-bbc2-48fe-96fb-3b2a8626f59e"
-DATASET_URL = "https://data.gov.il/dataset/database-of-doctors-licenses-moh"
+DATASET_URL = "https://data.gov.il/api/3/action/package_show?id=database-of-doctors-licenses-moh"
 
 
 class DoctorsSource(Source):

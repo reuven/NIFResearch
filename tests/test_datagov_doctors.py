@@ -31,13 +31,13 @@ async def test_query_maps_record_to_profession_and_license():
     prof = next(f for f in result.facts if f.type == FactType.PROFESSION)
     assert prof.value == "רופא/ה"
     assert prof.confidence == 0.4
-    assert prof.url == "https://data.gov.il/dataset/database-of-doctors-licenses-moh"
+    assert prof.url == "https://data.gov.il/api/3/action/package_show?id=database-of-doctors-licenses-moh"
     assert prof.detail["specialty"] == "קרדיולוגיה"
     assert prof.detail["license_number"] == "12345"
     assert prof.detail["full_name"] == "דוד כהן"
     lic = next(f for f in result.facts if f.type == FactType.LICENSE)
     assert lic.confidence == 0.4
-    assert lic.url == "https://data.gov.il/dataset/database-of-doctors-licenses-moh"
+    assert lic.url == "https://data.gov.il/api/3/action/package_show?id=database-of-doctors-licenses-moh"
     assert lic.detail["specialty"] == "קרדיולוגיה"
 
 
