@@ -53,3 +53,32 @@ def test_progress_page_warns_on_invalid_id():
     resp = client.post("/research", data={"name_he": "דוד", "id_number": "123456789"})
     assert resp.status_code == 200
     assert "123456789" in resp.text   # invalid ID surfaced as a warning
+
+
+from urllib.parse import quote as _quote
+
+
+@respx.mock
+def test_grey_banner_absent_under_strict():
+    respx.get("https://data.gov.il/api/3/action/datastore_search").mock(
+        return_value=httpx.Response(200, json={"success": True, "result": {"records": []}})
+    )
+    client = TestClient(app)
+    resp = client.get("/research/stream?name_he=" + _quote("דוד"))
+    assert "grey-market" not in resp.text
+
+
+@respx.mock
+def test_grey_banner_present_when_grey_ran(monkeypatch):
+    monkeypatch.setenv("NIFRESEARCH_PIPL_API_KEY", "k")
+    respx.get("https://data.gov.il/api/3/action/datastore_search").mock(
+        return_value=httpx.Response(200, json={"success": True, "result": {"records": []}})
+    )
+    respx.get("https://api.pipl.com/search/").mock(return_value=httpx.Response(200, json={
+        "person": {"emails": [{"address": "a@b.co"}]}
+    }))
+    client = TestClient(app)
+    resp = client.get(
+        "/research/stream?compliance_mode=permissive&email=" + _quote("a@b.co")
+    )
+    assert "grey-market" in resp.text

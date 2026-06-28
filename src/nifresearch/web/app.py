@@ -9,6 +9,7 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+from nifresearch.models import Classification, SourceStatus
 from nifresearch.orchestrator import run_streaming
 from nifresearch.registry_setup import build_default_registry
 from nifresearch.resolution import build_profile
@@ -19,10 +20,19 @@ TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 app = FastAPI(title="NIFResearch")
 
 
-def render_report_fragment(profile, registry_map: dict[str, str]) -> str:
+def render_report_fragment(profile, registry_map: dict[str, str], grey_ids: set[str]) -> str:
+    grey_ran = any(
+        r.source_id in grey_ids and r.status != SourceStatus.SKIPPED
+        for r in profile.results
+    )
+    display_results = [
+        r for r in profile.results
+        if not (r.source_id in grey_ids and r.status == SourceStatus.SKIPPED)
+    ]
     template = TEMPLATES.env.get_template("_report_body.html")
     return template.render(
-        groups=profile.by_type(), results=profile.results, registry=registry_map
+        groups=profile.by_type(), results=display_results,
+        registry=registry_map, grey_ran=grey_ran,
     )
 
 
@@ -78,9 +88,12 @@ async def research_stream(
             registry = build_default_registry(client)
             sources = registry.all()
             registry_map = {s.id: s.name for s in sources}
+            grey_ids = {s.id for s in sources if s.classification == Classification.GREY_MARKET}
             results = []
             async for result in run_streaming(subject, sources, mode):
                 results.append(result)
+                if result.status == SourceStatus.SKIPPED:
+                    continue
                 payload = {
                     "source_id": result.source_id,
                     "name": registry_map.get(result.source_id, result.source_id),
@@ -89,7 +102,7 @@ async def research_stream(
                 }
                 yield f"event: progress\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
             profile = build_profile(subject, results)
-            html = render_report_fragment(profile, registry_map)
+            html = render_report_fragment(profile, registry_map, grey_ids)
             yield f"event: done\ndata: {json.dumps({'html': html}, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
