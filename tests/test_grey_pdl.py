@@ -30,3 +30,8 @@ async def test_match_maps_facts():
     assert r.status == SourceStatus.OK
     types = {f.type for f in r.facts}
     assert {FactType.EMPLOYER, FactType.ADDRESS, FactType.CONTACT} <= types
+    assert all(f.confidence == 0.25 for f in r.facts)
+    assert all(f.detail["caveat"] for f in r.facts)
+    sent = respx.calls.last.request
+    assert sent.headers.get("X-Api-Key") == "k"
+    assert "key=" not in str(sent.url)
