@@ -12,7 +12,9 @@ def test_strict_allows_only_official():
 def test_standard_adds_licensed():
     assert is_allowed(Classification.LICENSED, ComplianceMode.STANDARD) is True
     assert is_allowed(Classification.GREY_MARKET, ComplianceMode.STANDARD) is False
+    assert allowed_classifications(ComplianceMode.STANDARD) == {Classification.OFFICIAL_PUBLIC, Classification.LICENSED}
 
 
 def test_permissive_allows_all():
     assert is_allowed(Classification.GREY_MARKET, ComplianceMode.PERMISSIVE) is True
+    assert allowed_classifications(ComplianceMode.PERMISSIVE) == {Classification.OFFICIAL_PUBLIC, Classification.LICENSED, Classification.GREY_MARKET}

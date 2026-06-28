@@ -1,5 +1,5 @@
 from nifresearch.models import (
-    Fact, FactType, Profile, SourceResult, SourceStatus, Subject,
+    Fact, FactType, SourceResult, SourceStatus, Subject,
 )
 from nifresearch.resolution import build_profile
 
@@ -27,3 +27,16 @@ def test_dedupes_same_type_value_keeping_highest_confidence():
     kept = profile.facts[0]
     assert kept.confidence == 0.9
     assert set(kept.detail["also_from"]) == {"a", "b"}
+
+
+def test_dedupes_high_confidence_first_seen():
+    f_high = Fact(type=FactType.ROLE, value="חבר ועד", source_id="a", confidence=0.9)
+    f_low = Fact(type=FactType.ROLE, value="חבר ועד", source_id="b", confidence=0.3)
+    r = [
+        SourceResult(source_id="a", status=SourceStatus.OK, facts=[f_high]),
+        SourceResult(source_id="b", status=SourceStatus.OK, facts=[f_low]),
+    ]
+    profile = build_profile(Subject(), r)
+    assert len(profile.facts) == 1
+    assert profile.facts[0].confidence == 0.9
+    assert set(profile.facts[0].detail["also_from"]) == {"a", "b"}

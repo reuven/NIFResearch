@@ -36,6 +36,7 @@ async def research(
     async with httpx.AsyncClient() as client:
         registry = build_default_registry(client)
         results = await run(subject, registry.all(), ComplianceMode.STRICT)
+        registry_map = {s.id: s.name for s in registry.all()}
     profile = build_profile(subject, results)
     return TEMPLATES.TemplateResponse(
         request,
@@ -45,6 +46,6 @@ async def research(
             "warnings": warnings,
             "groups": profile.by_type(),
             "results": profile.results,
-            "registry": {s.id: s.name for s in registry.all()},
+            "registry": registry_map,
         },
     )
