@@ -1,12 +1,15 @@
 import asyncio
 import time
+import httpx
 import pytest
+import respx
 
 from nifresearch.models import (
     Classification, ComplianceMode, InputField, Subject, SourceResult, SourceStatus,
 )
 from nifresearch.sources.base import Source
 from nifresearch.orchestrator import run, run_streaming
+from nifresearch.sources.grey.pipl import PiplSource
 
 
 class OkSource(Source):
@@ -119,3 +122,23 @@ async def test_run_streaming_yields_one_result_per_source_including_skipped():
     assert by_id["ok"].status == SourceStatus.OK
     assert by_id["lic"].status == SourceStatus.SKIPPED      # licensed blocked under STRICT
     assert by_id["boom"].status == SourceStatus.ERROR       # raises
+
+
+@pytest.mark.asyncio
+async def test_grey_source_blocked_under_strict():
+    src = PiplSource(api_key="k")
+    results = await run(Subject(email="a@b.co"), [src], ComplianceMode.STRICT)
+    assert results[0].status == SourceStatus.SKIPPED
+    assert "compliance" in results[0].error
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_grey_source_runs_under_permissive():
+    respx.get("https://api.pipl.com/search/").mock(return_value=httpx.Response(200, json={
+        "person": {"emails": [{"address": "a@b.co"}]}
+    }))
+    async with httpx.AsyncClient() as client:
+        src = PiplSource(client=client, api_key="k")
+        results = await run(Subject(email="a@b.co"), [src], ComplianceMode.PERMISSIVE)
+    assert results[0].status == SourceStatus.OK
