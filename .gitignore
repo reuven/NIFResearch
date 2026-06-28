@@ -11,3 +11,6 @@ wheels/
 
 # Superpowers SDD scratch workspace
 .superpowers/
+
+# Personal (per-user) Claude Code settings — never commit
+.claude/settings.local.json
