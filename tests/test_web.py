@@ -65,7 +65,7 @@ def test_grey_banner_absent_under_strict():
     )
     client = TestClient(app)
     resp = client.get("/research/stream?name_he=" + _quote("דוד"))
-    assert "grey-market" not in resp.text
+    assert 'grey-banner' not in resp.text
 
 
 @respx.mock
@@ -81,4 +81,4 @@ def test_grey_banner_present_when_grey_ran(monkeypatch):
     resp = client.get(
         "/research/stream?compliance_mode=permissive&email=" + _quote("a@b.co")
     )
-    assert "grey-market" in resp.text
+    assert 'grey-banner' in resp.text

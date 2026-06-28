@@ -25,13 +25,9 @@ def render_report_fragment(profile, registry_map: dict[str, str], grey_ids: set[
         r.source_id in grey_ids and r.status != SourceStatus.SKIPPED
         for r in profile.results
     )
-    display_results = [
-        r for r in profile.results
-        if not (r.source_id in grey_ids and r.status == SourceStatus.SKIPPED)
-    ]
     template = TEMPLATES.env.get_template("_report_body.html")
     return template.render(
-        groups=profile.by_type(), results=display_results,
+        groups=profile.by_type(), results=profile.results,
         registry=registry_map, grey_ran=grey_ran,
     )
 
@@ -92,8 +88,6 @@ async def research_stream(
             results = []
             async for result in run_streaming(subject, sources, mode):
                 results.append(result)
-                if result.status == SourceStatus.SKIPPED:
-                    continue
                 payload = {
                     "source_id": result.source_id,
                     "name": registry_map.get(result.source_id, result.source_id),
