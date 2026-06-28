@@ -6,8 +6,7 @@
   {% for f in facts %}
     <div class="fact">{{ f.value }}
       <span class="src">— מקור: {{ registry.get(f.source_id, f.source_id) }}
-        (<code>{{ f.source_id }}</code>) (ביטחון {{ "%.1f"|format(f.confidence) }}){% if f.url %},
-        <a href="{{ f.url }}">קישור</a>{% endif %}</span>
+        (<code>{{ f.source_id }}</code>) (ביטחון {{ "%.1f"|format(f.confidence) }}){% if f.url and (f.url.startswith('http://') or f.url.startswith('https://')) %}, <a href="{{ f.url }}">קישור</a>{% endif %}</span>
     </div>
   {% endfor %}
 {% endfor %}

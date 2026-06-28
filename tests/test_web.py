@@ -13,6 +13,7 @@ def test_form_renders_with_dropdown():
     assert resp.status_code == 200
     assert 'name="name_he"' in resp.text
     assert 'name="compliance_mode"' in resp.text
+    assert "strict" in resp.text and "standard" in resp.text and "permissive" in resp.text
 
 
 def test_research_returns_progress_page():

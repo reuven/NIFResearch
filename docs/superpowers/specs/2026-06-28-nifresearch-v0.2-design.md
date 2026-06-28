@@ -141,7 +141,10 @@ handling DRY.
 `EventSource` is GET-only, so search params (including ת"ז) appear in the
 `/research/stream` query string. Nothing is persisted and the app is local, but
 this is a minor deviation from the privacy posture; a future change could switch
-to a streaming `fetch` POST. Accepted for the prototype.
+to a streaming `fetch` POST. Accepted for the prototype. Until the stream is
+moved to POST, operators should run with `--no-access-log` (or apply a log
+filter for this path), because a server access log would otherwise capture the
+ID-bearing URL.
 
 ## 6. Testing
 

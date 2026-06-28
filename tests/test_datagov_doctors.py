@@ -35,6 +35,10 @@ async def test_query_maps_record_to_profession_and_license():
     assert prof.detail["specialty"] == "קרדיולוגיה"
     assert prof.detail["license_number"] == "12345"
     assert prof.detail["full_name"] == "דוד כהן"
+    lic = next(f for f in result.facts if f.type == FactType.LICENSE)
+    assert lic.confidence == 0.4
+    assert lic.url == "https://data.gov.il/dataset/database-of-doctors-licenses-moh"
+    assert lic.detail["specialty"] == "קרדיולוגיה"
 
 
 @pytest.mark.asyncio

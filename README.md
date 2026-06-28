@@ -18,6 +18,20 @@ submit, a **progress page** shows each source's status live (via SSE) and then
 renders the report. Live sources: data.gov.il amutot, companies, and the MoH
 doctors registry — all official/public. Results are not stored.
 
+## Privacy note
+
+The live-progress stream (`/research/stream`) is a `GET` endpoint, so search
+parameters — including the Israeli ID (ת"ז) — appear in its URL. Nothing is
+persisted by the app, but a server **access log** would capture these URLs.
+When running beyond local use, disable access logging for this endpoint, e.g.:
+
+```bash
+uv run uvicorn nifresearch.web.app:app --no-access-log
+```
+
+A future version can switch the stream to a `POST` + `fetch` to remove params
+from the URL entirely.
+
 ## Test
 
 ```bash
