@@ -20,3 +20,18 @@ def test_invalid_email_warns():
     subject, warnings = build_subject("דוד", None, "bad-email", None, None)
     assert subject.email is None
     assert any("email" in w.lower() for w in warnings)
+
+
+def test_invalid_phone_dropped_with_warning():
+    subject, warnings = build_subject("דוד", None, None, "123", None)
+    assert subject.phone is None
+    assert any("phone" in w.lower() for w in warnings)
+
+
+def test_empty_strings_become_none_without_warning():
+    subject, warnings = build_subject("דוד", "", "", "   ", None)
+    assert subject.name_en is None
+    assert subject.email is None
+    assert subject.phone is None
+    assert subject.id_number is None
+    assert warnings == []
