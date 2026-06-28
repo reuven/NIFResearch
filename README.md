@@ -11,8 +11,12 @@ renders an RTL report. Results are not stored. See
 uv run uvicorn nifresearch.web.app:app --reload
 ```
 
-Open http://127.0.0.1:8000 . Compliance mode is STRICT (official-public sources
-only). The `mock_board` source returns sample data for demos.
+Open http://127.0.0.1:8000 .
+
+The search form has a **source-strictness** dropdown (STRICT default). After you
+submit, a **progress page** shows each source's status live (via SSE) and then
+renders the report. Live sources: data.gov.il amutot, companies, and the MoH
+doctors registry — all official/public. Results are not stored.
 
 ## Test
 
