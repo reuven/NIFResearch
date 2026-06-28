@@ -781,7 +781,8 @@ class HunterSource(GreySource):
             return []
         resp = await client.get(
             "https://api.hunter.io/v2/email-verifier",
-            params={"email": subject.email, "api_key": self._api_key}, timeout=20.0,
+            params={"email": subject.email},
+            headers={"Authorization": f"Bearer {self._api_key}"}, timeout=20.0,
         )
         resp.raise_for_status()
         data = (resp.json() or {}).get("data") or {}
@@ -953,14 +954,15 @@ class RocketReachSource(GreySource):
     required_inputs = {InputField.NAME, InputField.EMAIL}
 
     async def _fetch(self, subject: Subject, client: httpx.AsyncClient) -> list[Fact]:
-        params: dict[str, str] = {"api_key": self._api_key}
+        params: dict[str, str] = {}
         if subject.email:
             params["email"] = subject.email
         name = subject.name_he or subject.name_en
         if name:
             params["name"] = name
         resp = await client.get(
-            "https://api.rocketreach.co/v2/api/lookupProfile", params=params, timeout=20.0,
+            "https://api.rocketreach.co/v2/api/lookupProfile",
+            params=params, headers={"Api-Key": self._api_key}, timeout=20.0,
         )
         resp.raise_for_status()
         data = resp.json() or {}
@@ -1141,7 +1143,8 @@ class NumVerifySource(GreySource):
             return []
         resp = await client.get(
             "https://apilayer.net/api/validate",
-            params={"access_key": self._api_key, "number": subject.phone}, timeout=20.0,
+            params={"number": subject.phone},
+            headers={"apikey": self._api_key}, timeout=20.0,
         )
         resp.raise_for_status()
         data = resp.json() or {}

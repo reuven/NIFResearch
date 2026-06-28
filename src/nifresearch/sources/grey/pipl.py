@@ -14,7 +14,7 @@ class PiplSource(GreySource):
     required_inputs = {InputField.NAME, InputField.EMAIL, InputField.PHONE}
 
     async def _fetch(self, subject: Subject, client: httpx.AsyncClient) -> list[Fact]:
-        params: dict[str, str] = {"key": self._api_key}
+        params: dict[str, str] = {}
         if subject.email:
             params["email"] = subject.email
         if subject.phone:
@@ -22,7 +22,12 @@ class PiplSource(GreySource):
         name = subject.name_he or subject.name_en
         if name:
             params["raw_name"] = name
-        resp = await client.get("https://api.pipl.com/search/", params=params, timeout=20.0)
+        resp = await client.get(
+            "https://api.pipl.com/search/",
+            params=params,
+            headers={"X-Access-Key": self._api_key},
+            timeout=20.0,
+        )
         resp.raise_for_status()
         person = (resp.json() or {}).get("person") or {}
         facts: list[Fact] = []
