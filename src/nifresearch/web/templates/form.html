@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>NIFResearch — מחקר תורמים</title>
+  <style>
+    body { font-family: sans-serif; max-width: 640px; margin: 2rem auto; }
+    label { display:block; margin: .5rem 0 .15rem; }
+    input { width: 100%; padding: .4rem; }
+    button { margin-top: 1rem; padding: .5rem 1rem; }
+    .note { color:#555; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <h1>מחקר תורמים</h1>
+  <p class="note">הזינו כל פרט מזהה שיש לכם. כל השדות אופציונליים.</p>
+  <form action="/research" method="post">
+    <label>שם (עברית)</label><input name="name_he">
+    <label>Name (English)</label><input name="name_en">
+    <label>אימייל / Email</label><input name="email">
+    <label>טלפון / Phone</label><input name="phone">
+    <label>תעודת זהות / ID</label><input name="id_number">
+    <button type="submit">חפש</button>
+  </form>
+</body>
+</html>

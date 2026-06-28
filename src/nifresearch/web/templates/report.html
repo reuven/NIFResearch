@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>דוח — NIFResearch</title>
+  <style>
+    body { font-family: sans-serif; max-width: 760px; margin: 2rem auto; }
+    .warn { background:#fff3cd; padding:.5rem .75rem; border:1px solid #ffe69c; margin:.25rem 0; }
+    .fact { padding:.35rem 0; border-bottom:1px solid #eee; }
+    .src { color:#666; font-size:.8rem; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    td, th { border:1px solid #ddd; padding:.35rem; text-align:right; font-size:.9rem; }
+    .skipped { color:#999; } .error { color:#b00; } .ok { color:#070; }
+  </style>
+</head>
+<body>
+  <h1>דוח מחקר</h1>
+
+  {% for w in warnings %}
+    <div class="warn">{{ w }}</div>
+  {% endfor %}
+
+  {% if not groups %}
+    <p>לא נמצאו ממצאים מהמקורות הזמינים.</p>
+  {% endif %}
+
+  {% for fact_type, facts in groups.items() %}
+    <h2>{{ fact_type.value }}</h2>
+    {% for f in facts %}
+      <div class="fact">
+        {{ f.value }}
+        <span class="src">
+          — מקור: {{ registry.get(f.source_id, f.source_id) }} (<code>{{ f.source_id }}</code>)
+          (ביטחון {{ "%.1f"|format(f.confidence) }}){% if f.url %},
+          <a href="{{ f.url }}">קישור</a>{% endif %}
+        </span>
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  <h2>מקורות שנבדקו</h2>
+  <table>
+    <tr><th>מקור</th><th>סטטוס</th><th>הערה</th></tr>
+    {% for r in results %}
+      <tr>
+        <td>{{ registry.get(r.source_id, r.source_id) }}</td>
+        <td class="{{ r.status.value }}">{{ r.status.value }}</td>
+        <td>{{ r.error or "" }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <p class="src">תוצאות אינן נשמרות. למטרות מחקר תורמים בלבד.</p>
+  <p><a href="/">חיפוש חדש</a></p>
+</body>
+</html>
