@@ -34,10 +34,11 @@ class AmutotSource(Source):
                 value=rec.get("שם עמותה", "").strip(),
                 source_id=self.id,
                 confidence=0.3,
-                url="https://www.guidestar.org.il/",
+                url="https://data.gov.il/dataset/moj-amutot",
                 detail={
                     "amuta_number": str(rec.get("מספר עמותה", "")),
                     "status": rec.get("סטטוס עמותה", ""),
+                    "guidestar": "https://www.guidestar.org.il/",
                 },
             )
             for rec in records

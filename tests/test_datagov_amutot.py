@@ -28,6 +28,22 @@ async def test_query_maps_records_to_facts():
     assert result.facts[0].value == "עמותת אור"
     assert result.facts[0].detail["amuta_number"] == "580001"
     assert result.facts[0].source_id == "datagov_amutot"
+    assert result.facts[0].confidence == 0.3
+    assert result.facts[0].detail["status"] == "רשומה"
+    assert result.facts[0].url == "https://data.gov.il/dataset/moj-amutot"
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_records_missing_org_name_is_no_match():
+    respx.get("https://data.gov.il/api/3/action/datastore_search").mock(
+        return_value=httpx.Response(200, json={"success": True, "result": {"records": [
+            {"מספר עמותה": "580001"},
+        ]}})
+    )
+    async with httpx.AsyncClient() as client:
+        result = await AmutotSource(client=client).query(Subject(name_he="אור"))
+    assert result.status == SourceStatus.NO_MATCH
 
 
 @pytest.mark.asyncio
