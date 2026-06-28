@@ -31,6 +31,7 @@ class FactType(str, Enum):
     BOARD_MEMBERSHIP = "board_membership"
     PROFESSION = "profession"
     LICENSE = "license"
+    CONTACT = "contact"
     ORG_AFFILIATION = "org_affiliation"
     DONATION = "donation"
     INCOME_ESTIMATE = "income_estimate"
