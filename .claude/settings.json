@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash($SDD/task-brief *)",
-      "Bash($SDD/review-package *)"
-    ]
-  }
-}
