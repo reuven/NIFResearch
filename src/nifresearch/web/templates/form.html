@@ -20,6 +20,13 @@
     <label for="email">אימייל / Email</label><input id="email" name="email">
     <label for="phone">טלפון / Phone</label><input id="phone" name="phone">
     <label for="id_number">תעודת זהות / ID</label><input id="id_number" name="id_number">
+    <label for="compliance_mode">רמת מקורות / Source strictness</label>
+    <select id="compliance_mode" name="compliance_mode">
+      <option value="strict" selected>strict — מקורות ציבוריים רשמיים בלבד</option>
+      <option value="standard">standard — + מקורות מורשים</option>
+      <option value="permissive">permissive — כל המקורות</option>
+    </select>
+    <p class="note">הרחבת הרמה משפיעה רק כאשר קיימים מקורות מורשים/אפורים (אין כרגע).</p>
     <button type="submit">חפש</button>
   </form>
 </body>

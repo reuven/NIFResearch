@@ -7,11 +7,10 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from nifresearch.intake import build_subject
-from nifresearch.models import ComplianceMode
 from nifresearch.orchestrator import run
 from nifresearch.registry_setup import build_default_registry
 from nifresearch.resolution import build_profile
+from nifresearch.web.params import build_request_context
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 
@@ -31,12 +30,16 @@ async def research(
     email: str | None = Form(default=None),
     phone: str | None = Form(default=None),
     id_number: str | None = Form(default=None),
+    compliance_mode: str | None = Form(default=None),
 ) -> HTMLResponse:
-    subject, warnings = build_subject(name_he, name_en, email, phone, id_number)
+    subject, warnings, mode = build_request_context(
+        name_he, name_en, email, phone, id_number, compliance_mode
+    )
     async with httpx.AsyncClient() as client:
         registry = build_default_registry(client)
-        results = await run(subject, registry.all(), ComplianceMode.STRICT)
-        registry_map = {s.id: s.name for s in registry.all()}
+        sources = registry.all()
+        results = await run(subject, sources, mode)
+        registry_map = {s.id: s.name for s in sources}
     profile = build_profile(subject, results)
     return TEMPLATES.TemplateResponse(
         request,

@@ -1,0 +1,25 @@
+{% if not groups %}
+  <p>לא נמצאו ממצאים מהמקורות הזמינים.</p>
+{% endif %}
+{% for fact_type, facts in groups.items() %}
+  <h2>{{ fact_type.value }}</h2>
+  {% for f in facts %}
+    <div class="fact">{{ f.value }}
+      <span class="src">— מקור: {{ registry.get(f.source_id, f.source_id) }}
+        (<code>{{ f.source_id }}</code>) (ביטחון {{ "%.1f"|format(f.confidence) }}){% if f.url %},
+        <a href="{{ f.url }}">קישור</a>{% endif %}</span>
+    </div>
+  {% endfor %}
+{% endfor %}
+<h2>מקורות שנבדקו</h2>
+<table>
+  <tr><th>מקור</th><th>סטטוס</th><th>הערה</th></tr>
+  {% for r in results %}
+    <tr>
+      <td>{{ registry.get(r.source_id, r.source_id) }}</td>
+      <td class="{{ r.status.value }}">{{ r.status.value }}</td>
+      <td>{{ r.error or "" }}</td>
+    </tr>
+  {% endfor %}
+</table>
+<p class="src">תוצאות אינן נשמרות. למטרות מחקר תורמים בלבד.</p>
