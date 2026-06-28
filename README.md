@@ -32,6 +32,16 @@ uv run uvicorn nifresearch.web.app:app --no-access-log
 A future version can switch the stream to a `POST` + `fetch` to remove params
 from the URL entirely.
 
+## Grey-market sources (disabled by default)
+
+Ten commercial data-broker / enrichment sources are available but **double-gated**:
+they run only under the **PERMISSIVE** strictness setting AND only when their API
+key environment variable is set (e.g. `NIFRESEARCH_PIPL_API_KEY`). With no keys,
+they report "not configured" and do nothing. See
+`docs/superpowers/research/grey-sources.md` for the full list and the legal
+caveat — **do not enable for real data without legal sign-off.** Breach-sourced
+datasets are never integrated.
+
 ## Test
 
 ```bash
