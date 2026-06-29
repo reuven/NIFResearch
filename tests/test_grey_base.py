@@ -1,4 +1,3 @@
-import httpx
 import pytest
 
 from nifresearch.models import (

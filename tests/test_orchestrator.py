@@ -1,5 +1,6 @@
 import asyncio
 import time
+
 import httpx
 import pytest
 import respx
@@ -130,6 +131,14 @@ async def test_grey_source_blocked_under_strict():
     results = await run(Subject(email="a@b.co"), [src], ComplianceMode.STRICT)
     assert results[0].status == SourceStatus.SKIPPED
     assert "compliance" in results[0].error
+
+
+@pytest.mark.asyncio
+async def test_grey_source_skipped_when_unconfigured_even_under_permissive():
+    src = PiplSource(api_key=None)
+    results = await run(Subject(email="a@b.co"), [src], ComplianceMode.PERMISSIVE)
+    assert results[0].status == SourceStatus.SKIPPED
+    assert "not configured" in results[0].error
 
 
 @pytest.mark.asyncio

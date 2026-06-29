@@ -25,9 +25,12 @@ async def test_match_maps_caller_name():
         return_value=httpx.Response(200, json={"caller_name": {"caller_name": "David Cohen"}})
     )
     async with httpx.AsyncClient() as client:
-        r = await TwilioLookupSource(client=client, auth=("sid", "tok")).query(
+        r = await TwilioLookupSource(client=client, auth=("SID", "SEKRET")).query(
             Subject(phone="+972500000000")
         )
     assert r.status == SourceStatus.OK
     assert r.facts[0].type == FactType.CONTACT
     assert r.facts[0].value == "David Cohen"
+    req = respx.calls.last.request
+    assert req.headers.get("Authorization", "").startswith("Basic ")
+    assert "SEKRET" not in str(req.url)

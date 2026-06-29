@@ -25,8 +25,11 @@ async def test_match_maps_contact():
         "data": {"status": "valid", "score": 96, "email": "a@b.co"}
     }))
     async with httpx.AsyncClient() as client:
-        r = await HunterSource(client=client, api_key="k").query(Subject(email="a@b.co"))
+        r = await HunterSource(client=client, api_key="SEKRET").query(Subject(email="a@b.co"))
     assert r.status == SourceStatus.OK
     f = r.facts[0]
     assert f.type == FactType.CONTACT
     assert f.detail["status"] == "valid"
+    req = respx.calls.last.request
+    assert "SEKRET" in req.headers.get("Authorization", "")
+    assert "SEKRET" not in str(req.url)

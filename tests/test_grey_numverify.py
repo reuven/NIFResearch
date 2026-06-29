@@ -24,7 +24,11 @@ async def test_match_maps_facts():
         "location": "Israel", "country_name": "Israel",
     }))
     async with httpx.AsyncClient() as client:
-        r = await NumVerifySource(client=client, api_key="k").query(Subject(phone="+972500000000"))
+        r = await NumVerifySource(client=client, api_key="SEKRET").query(Subject(phone="+972500000000"))
     assert r.status == SourceStatus.OK
     types = {f.type for f in r.facts}
     assert FactType.CONTACT in types
+    assert FactType.ADDRESS in types
+    req = respx.calls.last.request
+    assert req.headers.get("apikey") == "SEKRET"
+    assert "SEKRET" not in str(req.url)

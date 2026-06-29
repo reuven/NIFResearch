@@ -26,7 +26,10 @@ async def test_match_maps_facts():
         })
     )
     async with httpx.AsyncClient() as client:
-        r = await RocketReachSource(client=client, api_key="k").query(Subject(email="a@b.co"))
+        r = await RocketReachSource(client=client, api_key="SEKRET").query(Subject(email="a@b.co"))
     assert r.status == SourceStatus.OK
     types = {f.type for f in r.facts}
     assert {FactType.CONTACT, FactType.EMPLOYER, FactType.ROLE} <= types
+    req = respx.calls.last.request
+    assert req.headers.get("Api-Key") == "SEKRET"
+    assert "SEKRET" not in str(req.url)

@@ -27,7 +27,10 @@ async def test_match_maps_facts():
         }
     }))
     async with httpx.AsyncClient() as client:
-        r = await LushaSource(client=client, api_key="k").query(Subject(email="a@b.co"))
+        r = await LushaSource(client=client, api_key="SEKRET").query(Subject(email="a@b.co"))
     assert r.status == SourceStatus.OK
     types = {f.type for f in r.facts}
     assert {FactType.ROLE, FactType.EMPLOYER, FactType.CONTACT} <= types
+    req = respx.calls.last.request
+    assert req.headers.get("api_key") == "SEKRET"
+    assert "SEKRET" not in str(req.url)

@@ -27,7 +27,10 @@ async def test_match_maps_facts():
         }
     }))
     async with httpx.AsyncClient() as client:
-        r = await ContactOutSource(client=client, api_key="k").query(Subject(email="a@b.co"))
+        r = await ContactOutSource(client=client, api_key="SEKRET").query(Subject(email="a@b.co"))
     assert r.status == SourceStatus.OK
     types = {f.type for f in r.facts}
     assert {FactType.CONTACT, FactType.EMPLOYER} <= types
+    req = respx.calls.last.request
+    assert "SEKRET" in req.headers.get("authorization", "")
+    assert "SEKRET" not in str(req.url)

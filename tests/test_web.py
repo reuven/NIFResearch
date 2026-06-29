@@ -1,4 +1,4 @@
-from urllib.parse import quote
+from urllib.parse import quote, quote as _quote
 
 import httpx
 import respx
@@ -53,9 +53,6 @@ def test_progress_page_warns_on_invalid_id():
     resp = client.post("/research", data={"name_he": "דוד", "id_number": "123456789"})
     assert resp.status_code == 200
     assert "123456789" in resp.text   # invalid ID surfaced as a warning
-
-
-from urllib.parse import quote as _quote
 
 
 @respx.mock

@@ -9,6 +9,11 @@
 >
 > **Breach-sourced datasets (leaked population/voter registries) are excluded by
 > policy and are never integrated.**
+>
+> **Privacy notice:** when enabled, subject PII (email, phone — and the phone
+> number in Twilio's request URL path) travels in outbound HTTPS requests to
+> these third-party providers. Confirm this is acceptable under your legal basis
+> before enabling any provider.
 
 | Source | id | Input(s) | Env key(s) | Returns |
 |--------|----|----------|------------|---------|

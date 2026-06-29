@@ -25,7 +25,9 @@ class HunterSource(GreySource):
         data = (resp.json() or {}).get("data") or {}
         if not data.get("email"):
             return []
-        return [self._grey_fact(
-            FactType.CONTACT, data["email"],
-            channel="email", status=data.get("status", ""), score=data.get("score"),
-        )]
+        detail: dict = {"channel": "email"}
+        if data.get("status"):
+            detail["status"] = data["status"]
+        if data.get("score") is not None:
+            detail["score"] = data["score"]
+        return [self._grey_fact(FactType.CONTACT, data["email"], **detail)]
